@@ -9,9 +9,10 @@
 
 preferences {
   section("Things to secure?") {
-    input "contact", "capability.contactSensor",      title: "Contact Sensor",     required: false
-    input "motion",  "capability.motionSensor",       title: "Motion Sensor",      required: false
-    input "knock",   "capability.accelerationSensor", title: "Knock Sensor",       required: false
+    input "contact", "capability.contactSensor",      title: "Contact Sensor",    required: false
+    input "motion",  "capability.motionSensor",       title: "Motion Sensor",     required: false
+    input "knock",   "capability.accelerationSensor", title: "Knock Sensor",      required: false
+    input "axis",    "capability.threeAxis",          title: "Three-Axis Sensor", required: false
   }
 
   section("Temperature monitor?") {
@@ -48,6 +49,7 @@ def init() {
   subscribe(motion,  "motion.active",        triggerMotion)
   subscribe(knock,   "acceleration.active",  triggerKnock)
   subscribe(temp,    "temperature",          triggerTemp)
+  subscribe(axis,    "threeAxis",            triggerAxis)
 }
 
 def triggerContact(evt) {
@@ -74,6 +76,12 @@ def triggerTemp(evt) {
   if((maxTemp && maxTemp < temperature) ||
      (minTemp && minTemp > temperature)) {
     send("Safe Watch: ${temp.label ?: temp.name} is ${temperature}")
+  }
+}
+
+def triggerAxis(evt) {
+  if(everyoneIsAway()) {
+    send("Safe Watch: ${axis.label ?: axis.name} was tilted!")
   }
 }
 
